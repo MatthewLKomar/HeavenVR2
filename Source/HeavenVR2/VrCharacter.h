@@ -1,4 +1,6 @@
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!IMPORTANT READ THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!THIS IS OBSOLETE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//! Anyways, here's the read me for this:
 //http://prntscr.com/ry0tvf include this in the blueprint if you want to use your hands
 //Set Hand needs to overwritten to look like this: http://prntscr.com/ry0wdp
 //To my lovely 112 reader, sometimes it's easier to avoid a headache and just use blueprints.

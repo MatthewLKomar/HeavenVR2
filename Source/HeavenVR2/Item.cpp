@@ -10,7 +10,7 @@
 AItem::AItem()
 {
 	//Load inventory data table
-	static ConstructorHelpers::FObjectFinder<UDataTable> ItemTableDataObject(TEXT("DataTable'/Game/Inventory/ItemData.ItemData'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> ItemTableDataObject(TEXT("DataTable'/Game/_blueprints/Inventory/ItemData.ItemData'"));
 	if (ItemTableDataObject.Succeeded())
 	{
 		ItemDataTable = ItemTableDataObject.Object;

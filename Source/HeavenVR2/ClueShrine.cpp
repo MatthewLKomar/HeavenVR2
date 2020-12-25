@@ -11,7 +11,7 @@
 // Sets default values
 AClueShrine::AClueShrine()
 {
-	static ConstructorHelpers::FObjectFinder<UDataTable> ItemTableDataObject(TEXT("DataTable'/Game/Inventory/ItemData.ItemData'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> ItemTableDataObject(TEXT("DataTable'/Game/_blueprints/Inventory/ItemData.ItemData'")); //change dir when you move ItemData
 	if (ItemTableDataObject.Succeeded())
 	{
 		ItemDataTable = ItemTableDataObject.Object;		

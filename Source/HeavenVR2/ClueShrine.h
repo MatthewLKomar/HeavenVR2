@@ -21,7 +21,7 @@ public:
 	// Sets default values for this actor's properties
 	AClueShrine();
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		class UDataTable* ItemDataTable;
+		class UDataTable* ItemDataTable; // Set in in constructor
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		class UStaticMeshComponent* Shrine;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)

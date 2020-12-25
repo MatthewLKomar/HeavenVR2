@@ -20,7 +20,7 @@ class HEAVENVR2_API AItem : public AStaticMeshActor
 		AItem();
 public: 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		class UDataTable* ItemDataTable;
+		class UDataTable* ItemDataTable; //set in constructor
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int ItemID;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
