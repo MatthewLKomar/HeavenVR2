@@ -233,7 +233,7 @@ void ASimplifiedVRChar::ToPreviousPoint()
 
 void ASimplifiedVRChar::MoveToPoint(AActor * PointOfInterst)
 {
-	SetActorLocation(PointOfInterst->GetActorLocation());
+	if (PointOfInterst)	SetActorLocation(PointOfInterst->GetActorLocation());
 }
 
 
