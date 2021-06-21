@@ -17,6 +17,7 @@
 #include "FootSteps.h"
 #include "Grabber.h"
 #include "Inventory.h"
+#include "HandComponent.h" //HandComponent reference
 #include "Components/WidgetInteractionComponent.h"
 #include "SimplifiedVRChar.generated.h"
 
@@ -48,33 +49,38 @@ public:
 		class UCameraComponent* Camera = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		class UMotionControllerComponent* LeftController;
+		class UHandComponent* LeftController;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		class UMotionControllerComponent* RightController;
+		class UHandComponent* RightController;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		class UGrabber* LeftGrabber;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	//	class UGrabber* LeftGrabber;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		class UGrabber* RightGrabber;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	//	class UGrabber* RightGrabber;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		class USkeletalMeshComponent* LeftHand;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	//	class USkeletalMeshComponent* LeftHand;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		class USkeletalMeshComponent* RightHand;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	//	class USkeletalMeshComponent* RightHand;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class UWidgetInteractionComponent* RWidgetInteraction;
+
 
 	UPROPERTY(BlueprintReadWrite)
 		class UInventory* Inventory;
 
 	UPROPERTY(VisibleAnywhere)
 		class UFootSteps* FootStep;
+	
+	void PreventWallClipping();
+	
 	UFUNCTION(BlueprintCallable)
 		void MoveForward(float Value);
+
 	UFUNCTION(BlueprintCallable)
 		void MoveRight(float Value);
 
@@ -90,15 +96,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void ReleaseRight();
 
-	UFUNCTION(BlueprintCallable)
+	/*UFUNCTION(BlueprintCallable)
 		AActor* Grip(UGrabber* Grabber, USkeletalMeshComponent* Hand);
 	UFUNCTION(BlueprintCallable)
-		AActor* Release(UGrabber* Grabber, USkeletalMeshComponent* Hand);
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		AActor* HeldObject = nullptr;
+		AActor* Release(UGrabber* Grabber, USkeletalMeshComponent* Hand);*/
+	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	//	AActor* HeldObject = nullptr;
 
-	UPROPERTY(BlueprintReadWrite)
-		FName SocketName = "GripSocket";
+	//UPROPERTY(BlueprintReadWrite)
+	//	FName SocketName = "GripSocket";
 	UPROPERTY(BlueprintReadWrite)
 		FName FingerTip = "Pointer";
 
@@ -116,10 +122,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		bool IsHeadsetOn();
-	UFUNCTION(BlueprintCallable)
-		bool IsPalmUp(USkeletalMeshComponent* Hand, bool Debug = false);
-	UFUNCTION(BlueprintCallable)
-		AActor* SpawnInventory(USkeletalMeshComponent* MeshToAttach, TSubclassOf<AActor> UI, bool Debug = false);
+	//UFUNCTION(BlueprintCallable)
+	//	bool IsPalmUp(USkeletalMeshComponent* Hand, bool Debug = false);
+	//UFUNCTION(BlueprintCallable)
+	//	AActor* SpawnInventory(USkeletalMeshComponent* MeshToAttach, TSubclassOf<AActor> UI, bool Debug = false);
 	UPROPERTY(BlueprintReadWrite)
 		AActor* ItemInHand;
 private:

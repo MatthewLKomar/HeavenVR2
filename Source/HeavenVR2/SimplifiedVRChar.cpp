@@ -27,31 +27,31 @@ ASimplifiedVRChar::ASimplifiedVRChar()
 
 	Inventory = CreateDefaultSubobject<UInventory>(TEXT("Inventory Component")); //Attaches the inventory to the VrCharacter
 
-	LeftController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("Left Controller"));
+	LeftController = CreateDefaultSubobject<UHandComponent>(TEXT("Left Controller"));
 	LeftController->SetupAttachment(VRRoot);
 	LeftController->SetTrackingMotionSource(FXRMotionControllerBase::LeftHandSourceId);
 	LeftController->SetRelativeLocation(FVector(0.f, 0.f, 110.f));
 
-	LeftGrabber = CreateDefaultSubobject<UGrabber>(TEXT("Left Grabber"));
-	LeftGrabber->SetupAttachment(LeftController);
+	//LeftGrabber = CreateDefaultSubobject<UGrabber>(TEXT("Left Grabber"));
+	//LeftGrabber->SetupAttachment(LeftController);
 
-	LeftHand = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Left Hand"));
-	LeftHand->SetupAttachment(LeftController);
+	//LeftHand = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Left Hand"));
+	//LeftHand->SetupAttachment(LeftController);
 
-	RightController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("Right Controller"));
+	RightController = CreateDefaultSubobject<UHandComponent>(TEXT("Right Controller"));
 	RightController->SetupAttachment(VRRoot);
 	RightController->SetTrackingMotionSource(FXRMotionControllerBase::RightHandSourceId);
 	RightController->SetRelativeLocation(FVector(0.f, 0.f, 110.f));
 
-	RightGrabber = CreateDefaultSubobject<UGrabber>(TEXT("Right Grabber"));
-	RightGrabber->SetupAttachment(RightController);
+	//RightGrabber = CreateDefaultSubobject<UGrabber>(TEXT("Right Grabber"));
+	//RightGrabber->SetupAttachment(RightController);
 
-	RightHand = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Right Hand"));
-	RightHand->SetupAttachment(RightController);
+	//RightHand = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Right Hand"));
+	//RightHand->SetupAttachment(RightController);
 
 	//Handles UI interaction
 	RWidgetInteraction = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("Right Widget Interaction Component"));
-	RWidgetInteraction->SetupAttachment(RightHand);
+	RWidgetInteraction->SetupAttachment(RightController);
 
 }
 
@@ -60,7 +60,7 @@ void ASimplifiedVRChar::BeginPlay()
 {
 	Super::BeginPlay();
 	//Player VR Setup stuff
-	RWidgetInteraction->AttachToComponent(RightHand,
+	RWidgetInteraction->AttachToComponent(RightController,
 	FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), FingerTip);
 	// Set tracking origin (Oculus & Vive)
 	UHeadMountedDisplayFunctionLibrary::SetTrackingOrigin(EHMDTrackingOrigin::Floor);
@@ -76,16 +76,20 @@ void ASimplifiedVRChar::BeginPlay()
 	
 }
 
-// Called every frame
-void ASimplifiedVRChar::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	//Calculations to deal with collison. This basically prevents us from walking through walls
+void ASimplifiedVRChar::PreventWallClipping()
+{	//Calculations to deal with collison. This basically prevents us from walking through walls
 	NewCameraOffset = Camera->GetComponentLocation() - GetActorLocation();
 	NewCameraOffset.Z = 0;
 	AddActorWorldOffset(NewCameraOffset);
 	VRRoot->AddWorldOffset(-NewCameraOffset);
-	EnableInventory = IsPalmUp(LeftHand);
+}
+
+// Called every frame
+void ASimplifiedVRChar::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	PreventWallClipping();
+	EnableInventory = LeftController->IsPalmUp();
 
 }
 
@@ -115,90 +119,89 @@ void ASimplifiedVRChar::MoveRight(float Value)
 
 void ASimplifiedVRChar::GripLeft()
 {
-	HeldObject = Grip(LeftGrabber, LeftHand);
-	ItemInHand = HeldObject;
+	ItemInHand = ItemInHand = LeftController->Grip();
+
 }
 
 void ASimplifiedVRChar::ReleaseLeft()
 {
-	HeldObject = Release(LeftGrabber, LeftHand);
-	ItemInHand = HeldObject;
+	ItemInHand = ItemInHand = LeftController->Release();
+
 }
 
 void ASimplifiedVRChar::GripRight()
 {
-	HeldObject = Grip(RightGrabber, RightHand);
-	ItemInHand = HeldObject;
+	ItemInHand = RightController->Grip();
 }
 
 void ASimplifiedVRChar::ReleaseRight()
 {
-	HeldObject = Release(RightGrabber, RightHand);
-	ItemInHand = HeldObject;
-}
-
-AActor* ASimplifiedVRChar::Grip(UGrabber* Grabber, USkeletalMeshComponent* Hand)
-{
-	auto Held = Grabber->Grab(20.0f, true, true, EGrabTypeEnum::PRECISION_GRAB, "");
-	if (Held)
-	{
-		FAttachmentTransformRules TransformRules = FAttachmentTransformRules(
-			EAttachmentRule::SnapToTarget,
-			true);
-		Held->AttachToComponent(Hand, TransformRules, SocketName);
-		return Held;
-	}
-	return nullptr;
-}
-
-AActor* ASimplifiedVRChar::Release(UGrabber* Grabber, USkeletalMeshComponent* Hand)
-{
-	auto Held = Grabber->Release();
-	if (Held)
-	{
-		FDetachmentTransformRules TransformRules = FDetachmentTransformRules(
-			EDetachmentRule::KeepWorld,
-			true);
-		Held->DetachFromActor(TransformRules);
-		return Held;
-	}
-	return nullptr;
-}
-
-bool ASimplifiedVRChar::IsPalmUp(USkeletalMeshComponent* Hand, bool Debug)
-{
-	if ((Hand->GetSocketRotation("").Roll <= -120.0f && Hand->GetSocketRotation("").Roll >= -180.0f) ||
-		(Hand->GetSocketRotation("").Roll <= 180.0f && Hand->GetSocketRotation("").Roll >= 155.0f))
-	{
-		if (Debug)
-		{
-			UE_LOG(LogTemp, Error, TEXT("Can Inventory, %f"), Hand->GetSocketRotation("").Roll);
-		}
-		return true;
-	}
-	if (Debug)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Can't Inventory, %f"), Hand->GetSocketRotation("").Roll);
-	}
-	return false;
+	ItemInHand = ItemInHand = RightController->Release();
 
 }
 
-AActor* ASimplifiedVRChar::SpawnInventory(USkeletalMeshComponent* MeshToAttach, TSubclassOf<AActor> UI, bool Debug)
-{
-	FVector location = GetActorLocation();
-	FRotator rotation = GetActorRotation();
-	auto UIObject = GetWorld()->SpawnActor(UI, &location, &rotation);
-	if (UIObject != nullptr)
-	{
-		FAttachmentTransformRules TransformRules = FAttachmentTransformRules(
-			EAttachmentRule::SnapToTarget,
-			true);
-		UIObject->AttachToComponent(MeshToAttach, TransformRules, SocketName);
-		return UIObject;
-	}
-	return nullptr;
-}
+//AActor* ASimplifiedVRChar::Grip(UGrabber* Grabber, USkeletalMeshComponent* Hand)
+//{
+//	auto Held = Grabber->Grab(20.0f, true, true, EGrabTypeEnum::PRECISION_GRAB, "");
+//	if (Held)
+//	{
+//		FAttachmentTransformRules TransformRules = FAttachmentTransformRules(
+//			EAttachmentRule::SnapToTarget,
+//			true);
+//		Held->AttachToComponent(Hand, TransformRules, SocketName);
+//		return Held;
+//	}
+//	return nullptr;
+//}
+//
+//AActor* ASimplifiedVRChar::Release(UGrabber* Grabber, USkeletalMeshComponent* Hand)
+//{
+//	auto Held = Grabber->Release();
+//	if (Held)
+//	{
+//		FDetachmentTransformRules TransformRules = FDetachmentTransformRules(
+//			EDetachmentRule::KeepWorld,
+//			true);
+//		Held->DetachFromActor(TransformRules);
+//		return Held;
+//	}
+//	return nullptr;
+//}
+
+//bool ASimplifiedVRChar::IsPalmUp(USkeletalMeshComponent* Hand, bool Debug)
+//{
+//	if ((Hand->GetSocketRotation("").Roll <= -120.0f && Hand->GetSocketRotation("").Roll >= -180.0f) ||
+//		(Hand->GetSocketRotation("").Roll <= 180.0f && Hand->GetSocketRotation("").Roll >= 155.0f))
+//	{
+//		if (Debug)
+//		{
+//			UE_LOG(LogTemp, Error, TEXT("Can Inventory, %f"), Hand->GetSocketRotation("").Roll);
+//		}
+//		return true;
+//	}
+//	if (Debug)
+//	{
+//		UE_LOG(LogTemp, Warning, TEXT("Can't Inventory, %f"), Hand->GetSocketRotation("").Roll);
+//	}
+//	return false;
+//
+//}
+
+//AActor* ASimplifiedVRChar::SpawnInventory(USkeletalMeshComponent* MeshToAttach, TSubclassOf<AActor> UI, bool Debug)
+//{
+//	FVector location = GetActorLocation();
+//	FRotator rotation = GetActorRotation();
+//	auto UIObject = GetWorld()->SpawnActor(UI, &location, &rotation);
+//	if (UIObject != nullptr)
+//	{
+//		FAttachmentTransformRules TransformRules = FAttachmentTransformRules(
+//			EAttachmentRule::SnapToTarget,
+//			true);
+//		UIObject->AttachToComponent(MeshToAttach, TransformRules, SocketName);
+//		return UIObject;
+//	}
+//	return nullptr;
+//}
 
 
 void ASimplifiedVRChar::ToNextPoint()
@@ -244,7 +247,6 @@ bool ASimplifiedVRChar::IsHeadsetOn()
 	{
 		return true;
 	}
-
 	return false;
 }
 
