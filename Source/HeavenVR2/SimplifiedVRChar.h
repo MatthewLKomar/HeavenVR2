@@ -47,11 +47,19 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		class UCameraComponent* Camera = nullptr;
 
+<<<<<<< Updated upstream
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		class UMotionControllerComponent* LeftController;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		class UMotionControllerComponent* RightController;
+=======
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		AHandComponent* LeftController;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		AHandComponent* RightController;
+>>>>>>> Stashed changes
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		class UGrabber* LeftGrabber;

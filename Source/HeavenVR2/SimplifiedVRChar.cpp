@@ -8,7 +8,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "IHeadMountedDisplay.h"
-#include "XRMotionControllerBase.h"
 #include "Components/SceneComponent.h"
 #include <exception>
 
@@ -27,10 +26,17 @@ ASimplifiedVRChar::ASimplifiedVRChar()
 
 	Inventory = CreateDefaultSubobject<UInventory>(TEXT("Inventory Component")); //Attaches the inventory to the VrCharacter
 
+<<<<<<< Updated upstream
 	LeftController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("Left Controller"));
 	LeftController->SetupAttachment(VRRoot);
 	LeftController->SetTrackingMotionSource(FXRMotionControllerBase::LeftHandSourceId);
 	LeftController->SetRelativeLocation(FVector(0.f, 0.f, 110.f));
+=======
+	//LeftController = CreateDefaultSubobject<UHandComponent>(TEXT("Left Controller"));
+	//LeftController->SetupAttachment(VRRoot);
+	//LeftController->SetTrackingMotionSource(FXRMotionControllerBase::LeftHandSourceId);
+	//LeftController->SetRelativeLocation(FVector(0.f, 0.f, 110.f));
+>>>>>>> Stashed changes
 
 	LeftGrabber = CreateDefaultSubobject<UGrabber>(TEXT("Left Grabber"));
 	LeftGrabber->SetupAttachment(LeftController);
@@ -38,10 +44,17 @@ ASimplifiedVRChar::ASimplifiedVRChar()
 	LeftHand = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Left Hand"));
 	LeftHand->SetupAttachment(LeftController);
 
+<<<<<<< Updated upstream
 	RightController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("Right Controller"));
 	RightController->SetupAttachment(VRRoot);
 	RightController->SetTrackingMotionSource(FXRMotionControllerBase::RightHandSourceId);
 	RightController->SetRelativeLocation(FVector(0.f, 0.f, 110.f));
+=======
+	//RightController = CreateDefaultSubobject<UHandComponent>(TEXT("Right Controller"));
+	//RightController->SetupAttachment(VRRoot);
+	//RightController->SetTrackingMotionSource(FXRMotionControllerBase::RightHandSourceId);
+	//RightController->SetRelativeLocation(FVector(0.f, 0.f, 110.f));
+>>>>>>> Stashed changes
 
 	RightGrabber = CreateDefaultSubobject<UGrabber>(TEXT("Right Grabber"));
 	RightGrabber->SetupAttachment(RightController);
@@ -50,8 +63,13 @@ ASimplifiedVRChar::ASimplifiedVRChar()
 	RightHand->SetupAttachment(RightController);
 
 	//Handles UI interaction
+<<<<<<< Updated upstream
 	RWidgetInteraction = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("Right Widget Interaction Component"));
 	RWidgetInteraction->SetupAttachment(RightHand);
+=======
+	//RWidgetInteraction = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("Right Widget Interaction Component"));
+	//RWidgetInteraction->SetupAttachment(RightController);
+>>>>>>> Stashed changes
 
 }
 
@@ -60,10 +78,15 @@ void ASimplifiedVRChar::BeginPlay()
 {
 	Super::BeginPlay();
 	//Player VR Setup stuff
+<<<<<<< Updated upstream
 	RWidgetInteraction->AttachToComponent(RightHand,
 	FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), FingerTip);
+=======
+	/*RWidgetInteraction->AttachToComponent(RightController,
+	FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), FingerTip);*/
+>>>>>>> Stashed changes
 	// Set tracking origin (Oculus & Vive)
-	UHeadMountedDisplayFunctionLibrary::SetTrackingOrigin(EHMDTrackingOrigin::Floor);
+	UHeadMountedDisplayFunctionLibrary::SetTrackingOrigin(EHMDTrackingOrigin::Eye);
 	//Target Point set up stuff
 	UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), ATargetPoint::StaticClass(), TargetPointsFound);
 	if (TargetPointsFound.Num() >= 1) //need to do a null check to make sure we have an array, else we might crash
@@ -80,12 +103,17 @@ void ASimplifiedVRChar::BeginPlay()
 void ASimplifiedVRChar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+<<<<<<< Updated upstream
 	//Calculations to deal with collison. This basically prevents us from walking through walls
 	NewCameraOffset = Camera->GetComponentLocation() - GetActorLocation();
 	NewCameraOffset.Z = 0;
 	AddActorWorldOffset(NewCameraOffset);
 	VRRoot->AddWorldOffset(-NewCameraOffset);
 	EnableInventory = IsPalmUp(LeftHand);
+=======
+	PreventWallClipping();
+	//EnableInventory = LeftController->IsPalmUp();
+>>>>>>> Stashed changes
 
 }
 
