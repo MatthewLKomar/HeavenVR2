@@ -65,7 +65,7 @@ void AVRChar::BeginPlay()
 void AVRChar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	CollisionOffset();
+	//CollisionOffset();
 }
 
 // Called to bind functionality to input
