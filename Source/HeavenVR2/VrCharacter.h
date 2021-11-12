@@ -54,6 +54,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void GripRight();
 
+	void ToNextPoint();
+	void ToPreviousPoint();
+	void MoveToPoint(AActor* PointOfInterst);
+
 	UFUNCTION(BlueprintCallable)
 		void ReleaseRight();
 
@@ -67,11 +71,18 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		bool IsHeadsetOn();
-
+	UPROPERTY(EditAnywhere)
+		int StartLocation = 0;
+	UPROPERTY(EditAnywhere)
+		int CurrentLocation = 0;
+	UPROPERTY(EditAnywhere)
+		int MaxLocations = 0;
 	UFUNCTION(BlueprintCallable)
 		void SetPlayerTracking();
 
 	void CollisionOffset();
+
+	TArray<AActor*> TargetPointsFound;
 
 	UPROPERTY(BlueprintReadWrite)
 		AActor* ItemInHand;

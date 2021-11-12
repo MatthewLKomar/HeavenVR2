@@ -56,7 +56,14 @@ void AVRChar::BeginPlay()
 {
 	Super::BeginPlay();
 	SetPlayerTracking();
-
+	//Target Point set up stuff
+	UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), ATargetPoint::StaticClass(), TargetPointsFound);
+	if (TargetPointsFound.Num() >= 1) //need to do a null check to make sure we have an array, else we might crash
+	{
+		CurrentLocation = StartLocation;
+		MaxLocations = TargetPointsFound.Num() - 1;
+		MoveToPoint(TargetPointsFound[StartLocation]);
+	}
 }
 
 
@@ -72,7 +79,8 @@ void AVRChar::Tick(float DeltaTime)
 void AVRChar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	//PlayerInputComponent->BindAction(TEXT("NextPoint"), IE_Pressed, this, &AVRChar::ToNextPoint);
+	PlayerInputComponent->BindAction(TEXT("NextPoint"), IE_Pressed, this, &AVRChar::ToNextPoint);
+	PlayerInputComponent->BindAction(TEXT("PreviousPoint"), IE_Pressed, this, &AVRChar::ToPreviousPoint);
 
 	PlayerInputComponent->BindAxis(TEXT("NextForward"), this, &AVRChar::MoveForward);
 	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &AVRChar::MoveRight);
@@ -107,6 +115,45 @@ void AVRChar::MoveRight(float Value)
 		AddMovementInput(Direction, Value);
 	}
 }
+
+void AVRChar::MoveToPoint(AActor* PointOfInterst)
+{
+	if (PointOfInterst)	SetActorLocation(PointOfInterst->GetActorLocation());
+}
+
+
+void AVRChar::ToNextPoint()
+{
+	//to avoid array out of bounds error
+	if (MaxLocations == 0) return;
+	//Move forward in the array of target points
+	CurrentLocation += 1;
+	//if at [end of the array] go to [0]
+	if (CurrentLocation > MaxLocations)
+	{
+		CurrentLocation = 0;
+	}
+	//Teleport to currently selected target point
+	MoveToPoint(TargetPointsFound[CurrentLocation]);
+	UE_LOG(LogTemp, Warning, TEXT("Moving to next point"));
+
+}
+
+void AVRChar::ToPreviousPoint()
+{
+	//Move back in the array of target points
+	CurrentLocation -= 1;
+	//if at [0] go to [end of the array]
+	if (CurrentLocation < 0)
+	{
+		CurrentLocation = MaxLocations;
+	}
+	//Teleport to currently selected target point
+	MoveToPoint(TargetPointsFound[CurrentLocation]);
+	UE_LOG(LogTemp, Warning, TEXT("Moving to previous point"));
+
+}
+
 
 void AVRChar::GripLeft()
 {
